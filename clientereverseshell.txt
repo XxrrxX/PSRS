@@ -1,0 +1,115 @@
+
+=======================================================
+###################SERVIDOR############################
+=======================================================
+_______________________________________________________
+Comando powershell Socket para generar servidor:
+PS C:\> $listener = New-Object System.Net.Sockets.TcpListener("127.0.0.1",5555)  
+PS C:\> $Listener.start()
+_______________________________________________________
+
+Administracion de los clientes se crea la variable cliente y se dice al listener que acepte los clientes con el metodo
+PS C:\> $Client = $Listener.AcceptTcpClient()
+
+Para Listar los clentes ejecuta
+$Client
+
+
+_______________________________________________________
+
+=====================================================
+#####################################################
+=====================================================
+
+
+
+=====================================================
+#####################CLIENTE#########################
+=====================================================
+Comando powershell Socket para generar cliente:
+PS C:\> $Socket = New-Object System.Net.Sockets.TcpClient("127.0.0.1",5555)  
+PS C:\> $Socket.start()
+=====================================================
+#####################################################
+=====================================================
+
+=====================================================
+###########RIO DE INFORMACION#######################
+=====================================================
+Se requiere La conexion Cliente servidor previamente para crear el rio $Stream 
+para vincular,leer o escribir datos cliente servidor o viceversa
+Se declara $Stream en servidor y cliente
+____________________________________
+En servidor indicamos a Cliente el getStream()
+
+PS C:\> $Stream = $Client.GetStream()
+____________________________________
+En Cliente indicamos a Servidor el getStream()
+PS C:\> $Stream = $Socket.GetStream()
+
+=====================================================
+#####################################################
+=====================================================
+
+=====================================================
+##################TUBERIA############################
+=====================================================
+Una ves declarado y aplicado el $Stream con la tuberia podemos obtener todos 
+los metodos y propiedades de cualquier objeto que ayamos creado
+
+PS C:\> $Stream | Get-Member 
+=====================================================
+#####################################################
+=====================================================
+=====================================================
+###################Mandar datos###########################
+=====================================================
+De servidor a cliente
+PS C:\> $Text = "Hola Cliente..."
+PS C:\> $TextBytes = [System.Text.Encoding]::UTF8.GetBytes($Text)
+PS C:\> $TextBytes (opcional ejemplo)
+PS C:\> $TextBytes.Length (opcional ejemplo)
+PS C:\> $Stream.Write($TextBytes,0,$Textbytes.Length)
+
+=====================================================
+#####################################################
+=====================================================
+
+=====================================================
+###################Recibirdatos###########################
+=====================================================
+De servidor a cliente
+Se necesita un buffer para leerlos
+
+PS C:\> $Buffer = New-Object System.Byte[] 30
+PS C:\> $RecvBytes = $Stream.read($Buffer,0,$Buffer.Length)
+PS C:\> $RecvText = [System.Text.Encoding]::UTF8.GetString($Buffer,0,$RecvBytes)
+PS C:\> $RecvText
+________________
+Reenviar
+PS C:\> $Writer = New-Object System.IO.StreamWriter($Srteam)
+PS C:\> $Writer | Get-Member(OPcional)
+PS C:\> $Writer.write("Message")
+PS C:\> $Writer.Flush()
+________________________
+Recibir e Cliente a Servidor
+PS C:\> $Reader = New-Object System.IO.StreamReader($Stream)
+PS C:\> $Reader | Get-Member(OPcional)
+PS C:\> $Stream.DataAvailable(OPcional)
+PS C:\> $Reader.ReadLine()
+Del lado del cliente Para leer el mensaje: PS C:\> $Writer.Close()
+
+=====================================================
+#####################################################
+=====================================================
+Cerrar
+Cliente:
+$Writer.close()
+$Stream.close()
+$Socket.close()
+
+Servidor:
+$Reader.close()
+$Stream.close()
+$client.close()
+$Listener.stop()
