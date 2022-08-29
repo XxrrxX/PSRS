@@ -1,4 +1,7 @@
+do {
 $Socket = New-Object System.Net.Sockets.TcpClient("127.0.0.1",5555)  
+Start-Sleep -s 3
+} While ( !$Socket.Connected)
 Write-Host "Conectado al servidor..."
 
 $Stream = $Socket.GetStream()
